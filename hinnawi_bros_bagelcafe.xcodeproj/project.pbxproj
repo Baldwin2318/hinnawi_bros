@@ -14,6 +14,8 @@
 		551CE7FC2B685981009A1532 /* hinnawi_bros_bagelcafeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE7FB2B685981009A1532 /* hinnawi_bros_bagelcafeTests.swift */; };
 		551CE8062B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE8052B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift */; };
 		551CE8082B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE8072B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift */; };
+		55BC43512B685B5A00237F4D /* store_inv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BC43502B685B5A00237F4D /* store_inv.swift */; };
+		55BC43532B685C0500237F4D /* preps_inv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BC43522B685C0500237F4D /* preps_inv.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,8 @@
 		551CE8012B685981009A1532 /* hinnawi_bros_bagelcafeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = hinnawi_bros_bagelcafeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		551CE8052B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hinnawi_bros_bagelcafeUITests.swift; sourceTree = "<group>"; };
 		551CE8072B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hinnawi_bros_bagelcafeUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		55BC43502B685B5A00237F4D /* store_inv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = store_inv.swift; sourceTree = "<group>"; };
+		55BC43522B685C0500237F4D /* preps_inv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = preps_inv.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +102,8 @@
 				551CE7EC2B68597E009A1532 /* ContentView.swift */,
 				551CE7EE2B685981009A1532 /* Assets.xcassets */,
 				551CE7F02B685981009A1532 /* Preview Content */,
+				55BC43502B685B5A00237F4D /* store_inv.swift */,
+				55BC43522B685C0500237F4D /* preps_inv.swift */,
 			);
 			path = hinnawi_bros_bagelcafe;
 			sourceTree = "<group>";
@@ -257,8 +263,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55BC43532B685C0500237F4D /* preps_inv.swift in Sources */,
 				551CE7ED2B68597E009A1532 /* ContentView.swift in Sources */,
 				551CE7EB2B68597E009A1532 /* hinnawi_bros_bagelcafeApp.swift in Sources */,
+				55BC43512B685B5A00237F4D /* store_inv.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +355,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -404,7 +412,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -425,11 +433,16 @@
 				DEVELOPMENT_TEAM = 8J2FVM4HRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Baldwin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*]" = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -454,11 +467,15 @@
 				DEVELOPMENT_TEAM = 8J2FVM4HRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Baldwin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDarkContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
