@@ -1,8 +1,21 @@
 import SwiftUI
 
+class InventoryViewModel: ObservableObject {
+    @Published var itemCounts: [String: Int] = [:]
+
+    func updateItemCount(for item: String, newValue: Int) {
+        objectWillChange.send() // Explicitly notify about the change
+        itemCounts[item] = newValue
+        print("Item: \(item), New Value: \(newValue)") // Debugging
+    }
+    // ... other properties if needed
+}
+
+
 struct CustomStepper: View {
-    @Binding var value: Int
+    @Binding var value: Int // Bind to the specific value for the current item
     var range: ClosedRange<Int>
+    var onValueChanged: (Int) -> Void // Callback when value changes
     
     var body: some View {
         HStack {
@@ -10,6 +23,7 @@ struct CustomStepper: View {
             Button(action: {
                 if value > range.lowerBound {
                     value -= 1
+                    onValueChanged(value) // Notify about decrement
                 }
             }) {
                 Image(systemName: "minus")
@@ -29,6 +43,8 @@ struct CustomStepper: View {
             Button(action: {
                 if value < range.upperBound {
                     value += 1
+                    onValueChanged(value) // Notify about decrement
+                    print("Decremented to \(value)") // Debugging
                 }
             }) {
                 Image(systemName: "plus")
@@ -48,7 +64,7 @@ struct InventoryGridView: View {
     
     // Define the items
     let items = [
-        "Bacon", "Eggs", "Veggie", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Mix Vege",
+        "Bacon", "Eggs", "Veggies", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Mix Vege",
         "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
         "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
         "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"
@@ -58,8 +74,19 @@ struct InventoryGridView: View {
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 4)
     
     @State private var value: Int = 0
+    @State private var itemCounts: [String: Int] = [:] // Track item counts
+    @State private var selectedItem: String = "" // Track selected item
+    @StateObject private var viewModel = InventoryViewModel()
     
-    let images = ["bagel", "veggie", "dessert"]
+    init() {
+        _selectedItem = State(initialValue: items.first ?? "") // Initialize with the first item
+    }
+    
+    let images = [
+        "Bacon", "Eggs", "Veggies", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Mix Vege",
+        "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
+        "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
+        "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"]
 
     var body: some View {
         VStack {
@@ -80,7 +107,7 @@ struct InventoryGridView: View {
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
                             .background(Color.yellow)
                             .foregroundColor(.black)
-                        Text("No. Container")
+                        Text("\(viewModel.itemCounts[item, default: 0])") // Bind to viewModel's itemCounts
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
                         Text("Date")
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
@@ -93,27 +120,38 @@ struct InventoryGridView: View {
             }.frame(height: 500, alignment: .topLeading)
             VStack {
                 VStack {
-                    TabView {
-                        ForEach(images, id: \.self) { imageName in
+                    TabView (selection: $selectedItem){
+                        ForEach(Array(zip(images, items)), id: \.0) { (imageName, item) in
                             Image(imageName)
-                                .resizable() // Make the image resizable
-                                .scaledToFill() // Fill the frame of the parent view
-                                .frame(width: 200, height: 200) // Set width and height
+                                .resizable()
+                                .onTapGesture {
+                                                                    selectedItem = item // Set the selected item when the image is tapped
+                                                                }
+                                
+                                .scaledToFit()
+                                .frame(width: 500, height: 200) // Set width and height
                                 .clipped() // Clip the image to the frame
                                 .cornerRadius(10) // Optional: make the corners rounded
-                                .padding(.horizontal) // Optional: add padding on the sides
                                 .tag(imageName) // Assign a unique tag for each image
                         }
                     }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always)) // Set the tab view style
-                    .frame(width: 300, height: 300) // Set width and height for the TabView
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Set the tab view style
+                    .frame(width: 600, height: 200) // Set width and height for the TabView
                     
                 }
+                Text(selectedItem) // Display the name of the selected item
+                    .font(.largeTitle)
             }
             VStack {
-                CustomStepper(value: $value, range: 0...100)
-                    .padding()
+                CustomStepper(value: Binding(
+                    get: { self.viewModel.itemCounts[self.selectedItem, default: 0] },
+                    set: { self.viewModel.itemCounts[self.selectedItem] = $0 }
+                ), range: 0...10) { newValue in
+                    viewModel.updateItemCount(for: selectedItem, newValue: newValue)
+                }
+                .padding()
             }
+
         }
     }
 }
