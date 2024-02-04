@@ -43,7 +43,6 @@ struct store_inv: View {
     // ... Additional tables if needed
     
     var body: some View {
-        NavigationView {
             VStack {
                 if isLoading {
                                    // Display a loading indicator when the PDF is being generated
@@ -53,6 +52,7 @@ struct store_inv: View {
                                    Button("Save as PDF") {
                                        saveQuantitiesAsPDF()
                                    }
+                                   .padding()
                                }
             }.background(Color.yellow)
                 .sheet(isPresented: $showDocumentPicker) {
@@ -64,7 +64,7 @@ struct store_inv: View {
                                     }
                                 }
                             }
-        }
+        
         .environment(\.colorScheme, .light)
     }
     
