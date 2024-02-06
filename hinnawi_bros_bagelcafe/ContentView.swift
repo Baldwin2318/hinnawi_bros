@@ -20,11 +20,11 @@ struct ContentView: View {
         [
             ButtonData(symbolName: "checklist", title: "To Do List", isSystemIcon: true, action: incrementButtonCount),
             ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
-            ButtonData(symbolName: "cup.and.saucer", title: "Coffee", isSystemIcon: true, action: customAction),
-            ButtonData(symbolName: "bagel", title: "Sandwich", isSystemIcon: false, action: customAction),
+            //ButtonData(symbolName: "cup.and.saucer", title: "Coffee", isSystemIcon: true, action: customAction),
+            //ButtonData(symbolName: "bagel", title: "Sandwich", isSystemIcon: false, action: customAction),
             ButtonData(symbolName: "veggie", title: "Preps", isSystemIcon: false, action: gotoInventoryPreps),
             ButtonData(symbolName: "dessert", title: "Pastry", isSystemIcon: false, action: customAction),
-            ButtonData(symbolName: "person", title: "Policy", isSystemIcon: true, action: customAction),
+            //ButtonData(symbolName: "person", title: "Policy", isSystemIcon: true, action: customAction),
             ButtonData(symbolName: "questionmark.circle", title: "Help", isSystemIcon: true, action: customAction),
             // ... add other buttons data
         ]

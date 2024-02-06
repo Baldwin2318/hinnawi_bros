@@ -433,6 +433,7 @@
 				DEVELOPMENT_TEAM = 8J2FVM4HRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "hinnawi-bros-bagelcafe-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Baldwin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -467,6 +468,7 @@
 				DEVELOPMENT_TEAM = 8J2FVM4HRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "hinnawi-bros-bagelcafe-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Baldwin;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
