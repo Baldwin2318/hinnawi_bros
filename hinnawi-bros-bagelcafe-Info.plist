@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>NSPhotoLibraryAddUsageDescription</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -15,6 +17,28 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
+		</dict>
+		<dict/>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict/>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string></string>
+			<key>NSPhotoLibraryAddUsageDescription</key>
+			<string></string>
+			<key>UTTypeDescription</key>
+			<string>NSPhotoLibraryAddUsageDescription</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
+			<key>UTTypeIdentifier</key>
+			<string>NSPhotoLibraryAddUsageDescription</string>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
 		</dict>
 		<dict/>
 	</array>

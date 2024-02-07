@@ -15,6 +15,16 @@ struct InventoryItem: Identifiable {
     var name: String
     var quantity: String
 }
+class ImageSaver: NSObject, ObservableObject {
+    func writeToPhotoAlbum(image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveCompleted), nil)
+    }
+
+    @objc private func saveCompleted(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        print("Save finished!")
+        // handle the response, e.g., by updating some state or showing an alert
+    }
+}
 
 struct store_inv: View {
     @State private var itemQuantitiesTable1: [String] = Array(repeating: "", count: 100)
@@ -30,6 +40,8 @@ struct store_inv: View {
     @State private var showDocumentPicker = false
     @State private var documentURL: URL?
     @State private var isLoading = false // For indicating PDF generation progress
+    @StateObject private var imageSaver = ImageSaver()
+
 
     // Hard coded item tables
     let itemsTable1 = ["Salted Butter", "Unsalted Butter", "Cream Cheese Philadelphia", "Hinnawi Creamcheese", "Canola Oil", "Olive oil", "White Vinegar", "Apple Cider Vinegar", "Veggie burger", "Ketchup", "Tabasco", "Soya Sauce", "Maple Syrup", "Eggs", "Capers", "Cajun", "Garlic Powder", "Onion Powder", "Pepper", "Salt", "Paprika", "Oregano", "Honey squeeze bottle for clients", "Cinnamon sticks", "Sparkling water", "San Pellagrino Aranciata", "San Pellagrino Arcianta Rossa", "San Pellagrino Limonata", "Coke", "Diet Coke", "Nestea", "Eau Eska", "7up", "Ginger ale", "Orange juice", "Apple juice", "Gloves large", "Paper Péche", "Honey large size", "Ham for CK (1339666)","Turkey for CK", "Cheddar for CK", "Mozzerella for CK", "Clear bagel bags (5*3*15)"] // Up to 10 items
@@ -95,16 +107,60 @@ struct store_inv: View {
     }
     
     // Save the inventory list with quantities as PDF
-     private func saveQuantitiesAsPDF() {
-         
-         isLoading = true // Indicate loading
-             let pdfData = generatePDFData()
-                 documentURL = writeToTemporaryFile(data: pdfData)
-                 showDocumentPicker = true // Trigger the document picker sheet
-                 isLoading = false // End loading
-             
-         
-     }
+    private func saveQuantitiesAsPDF() {
+        isLoading = true // Indicate loading
+        let pdfData = generatePDFData()
+        
+        // Convert PDF data to UIImage array and save to Photos
+        if let images = pdfDataToImages(pdfData: pdfData) {
+            for image in images {
+                imageSaver.writeToPhotoAlbum(image: image)
+            }
+        }
+        
+        isLoading = false // End loading
+    }
+
+
+    private func pdfDataToImages(pdfData: Data) -> [UIImage]? {
+        guard let provider = CGDataProvider(data: pdfData as CFData),
+              let pdfDoc = CGPDFDocument(provider) else {
+            return nil
+        }
+
+        var images = [UIImage]()
+        let renderer = UIGraphicsImageRenderer(bounds: CGRect(x: 0, y: 0, width: 612, height: 792)) // Or get this size from the actual PDF page size
+
+        for pageNumber in 1...pdfDoc.numberOfPages {
+            guard let page = pdfDoc.page(at: pageNumber) else { continue }
+            let image = renderer.image { ctx in
+                UIColor.white.set()
+                ctx.fill(CGRect(x: 0, y: 0, width: 612, height: 792)) // Fill the context with white color
+
+                ctx.cgContext.translateBy(x: 0.0, y: 792) // Adjust based on actual PDF page size
+                ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
+
+                ctx.cgContext.drawPDFPage(page)
+            }
+            images.append(image)
+        }
+
+        return images
+    }
+
+    func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            // We got back an error!
+            showAlert(withTitle: "Save error", message: error.localizedDescription)
+        } else {
+            showAlert(withTitle: "Saved!", message: "Your inventory image has been saved to your photos.")
+        }
+    }
+
+    private func showAlert(withTitle title: String, message: String) {
+        // Show an alert with given title and message
+    }
+
     
     
     private func writeToTemporaryFile(data: Data) -> URL {
