@@ -237,6 +237,8 @@ struct InventoryGridView: View {
     @State private var selectedImageIndex: Int = 0 // Track the index of the selected image
 
     @State private var showingSavePDFAlert = false
+    @State private var tappedItem: String? = nil
+
     
     init() {
         _selectedItem = State(initialValue: items.first ?? "") // Initialize with the first item
@@ -267,9 +269,16 @@ struct InventoryGridView: View {
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
                             .background(Color.yellow)
                             .foregroundColor(.black)
-                            .onTapGesture {
-                                                            selectedItem = item // Set the selected item when text is tapped
-                                                        }
+                            .scaleEffect(tappedItem == item ? 1.1 : 1.0) // Scale up the text if it is the tapped item
+                                        .animation(.spring(response: 0.3, dampingFraction: 0.5), value: tappedItem) // Animate the scaling effect
+                                        .onTapGesture {
+                                            tappedItem = item // Set the tapped item
+                                            selectedItem = item
+                                            // Reset the tapped item after a delay
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                tappedItem = nil
+                                            }
+                                        }
                         Text("\(viewModel.itemCounts[item, default: 0])") // Bind to viewModel's itemCounts
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 50)
                         Button(action: {
@@ -331,14 +340,14 @@ struct InventoryGridView: View {
                                        }
                                 
                                 .scaledToFit()
-                                .frame(width: 500, height: 200) // Set width and height
+                                .frame(width: 500, height: 180) // Set width and height
                                 .clipped() // Clip the image to the frame
                                 .cornerRadius(10) // Optional: make the corners rounded
                                 .tag(imageName) // Assign a unique tag for each image
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Set the tab view style
-                    .frame(width: 600, height: 200) // Set width and height for the TabView
+                    .frame(width: 600, height: 180) // Set width and height for the TabView
                     
                 }.environment(\.colorScheme, .light)
                 Text(selectedItem) // Display the name of the selected item
@@ -363,11 +372,22 @@ struct InventoryGridView: View {
                                         dates: datesBinding)
                 }
             }
-            Button("Save to Photos") {
-                 saveAsPDF()
-             }
-             .alert(isPresented: $showingSavePDFAlert) {
-                 Alert(title: Text("Saved"), message: Text("Images saved to Photos"), dismissButton: .default(Text("OK")))
+            HStack {
+                Spacer() // Pushes the button to the right
+                Button(action: {
+                    saveAsPDF()
+                }) {
+                    Text("Save")
+                        .frame(width: 70, height: 30)
+                        .foregroundColor(.white)
+                        .background(Color.green)
+                        .cornerRadius(5)
+                        .alert(isPresented: $showingSavePDFAlert) {
+                            Alert(title: Text("Saved"), message: Text("Images saved to Photos"), dismissButton: .default(Text("OK")))
+                }
+            }
+            .padding(.horizontal) // Add horizontal padding to the HStack, not the button
+
              }
             // Display the generated image (for testing)
                        if let generatedImage = generatedImage {

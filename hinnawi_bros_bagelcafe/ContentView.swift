@@ -40,10 +40,14 @@ struct ContentView: View {
     ]
 
     var body: some View {
-        Image("logo_hinnawi") // Replace "yourImageName" with your actual image file name
-            .resizable()
-            .scaledToFit()
-            .frame(height: 60) // Adjust the size as needed.
+        VStack {
+            Image("logo_hinnawi") // Replace "logo_hinnawi" with your actual image file name
+                .resizable()
+                .scaledToFit()
+                .frame(height: 200) // Adjust the size as needed.
+                .padding(50)
+        }
+
             LazyVGrid(columns: columns, spacing: 50) {
                 ForEach(buttons.indices, id: \.self) { index in
                     Button(action: buttons[index].action) {
