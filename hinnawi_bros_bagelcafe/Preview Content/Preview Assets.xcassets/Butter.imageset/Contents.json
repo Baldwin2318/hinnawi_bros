@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "Natrel_beurre_rebrand2018_SALE_454g_2D.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
