@@ -15,6 +15,7 @@ struct ContentView: View {
     
     @State private var showStoreInvView = false
     @State private var showPrepsInvView = false
+    @State private var showPastryToPrepInvView = false
     
     @StateObject private var viewModel = InventoryViewModel() // Create a single instance
 
@@ -22,12 +23,12 @@ struct ContentView: View {
         [
             ButtonData(symbolName: "checklist", title: "To Do List", isSystemIcon: true, action: incrementButtonCount),
             ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
-            //ButtonData(symbolName: "cup.and.saucer", title: "Coffee", isSystemIcon: true, action: customAction),
+            ButtonData(symbolName: "leaf.arrow.triangle.circlepath", title: "Food To Prep", isSystemIcon: true, action: incrementButtonCount),
             //ButtonData(symbolName: "bagel", title: "Sandwich", isSystemIcon: false, action: customAction),
             ButtonData(symbolName: "veggie", title: "Food Inventory", isSystemIcon: false, action: gotoInventoryPreps),
-            //ButtonData(symbolName: "dessert", title: "Pastry", isSystemIcon: false, action: customAction),
+            ButtonData(symbolName: "tray", title: "Pasty To Prep", isSystemIcon: true, action: gotoPastryToPreps),
             //ButtonData(symbolName: "person", title: "Policy", isSystemIcon: true, action: customAction),
-            ButtonData(symbolName: "questionmark.circle", title: "Help", isSystemIcon: true, action: customAction),
+            //ButtonData(symbolName: "questionmark.circle", title: "Help", isSystemIcon: true, action: customAction),
             // ... add other buttons data
         ]
     }
@@ -86,6 +87,10 @@ struct ContentView: View {
             PrepsInvView()
                 .environmentObject(viewModel) // Inject the environment object
         }
+        .sheet(isPresented: $showPastryToPrepInvView) {
+            PastryToPrepInView()
+        }
+        .environmentObject(viewModel) // Inject the environment object
         
     }
 
@@ -102,8 +107,8 @@ struct ContentView: View {
         showPrepsInvView = true
     }
     // Function for custom action
-    private func customAction() {
-        //do nothing
+    private func gotoPastryToPreps() {
+        showPastryToPrepInvView = true
     }
 }
 
@@ -121,7 +126,12 @@ struct PrepsInvView: View {
      
     }
 }
-
+struct PastryToPrepInView: View {
+    var body: some View {
+        PastryToPepView()
+     
+    }
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

@@ -14,6 +14,7 @@
 		551CE7FC2B685981009A1532 /* hinnawi_bros_bagelcafeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE7FB2B685981009A1532 /* hinnawi_bros_bagelcafeTests.swift */; };
 		551CE8062B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE8052B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift */; };
 		551CE8082B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551CE8072B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift */; };
+		552404FB2B85A32F00BABD28 /* PastryToPrepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552404FA2B85A32F00BABD28 /* PastryToPrepView.swift */; };
 		55BC43512B685B5A00237F4D /* store_inv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BC43502B685B5A00237F4D /* store_inv.swift */; };
 		55BC43532B685C0500237F4D /* preps_inv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BC43522B685C0500237F4D /* preps_inv.swift */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,7 @@
 		551CE8012B685981009A1532 /* hinnawi_bros_bagelcafeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = hinnawi_bros_bagelcafeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		551CE8052B685981009A1532 /* hinnawi_bros_bagelcafeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hinnawi_bros_bagelcafeUITests.swift; sourceTree = "<group>"; };
 		551CE8072B685981009A1532 /* hinnawi_bros_bagelcafeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hinnawi_bros_bagelcafeUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		552404FA2B85A32F00BABD28 /* PastryToPrepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastryToPrepView.swift; sourceTree = "<group>"; };
 		55BC43502B685B5A00237F4D /* store_inv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = store_inv.swift; sourceTree = "<group>"; };
 		55BC43522B685C0500237F4D /* preps_inv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = preps_inv.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -104,6 +106,7 @@
 				551CE7F02B685981009A1532 /* Preview Content */,
 				55BC43502B685B5A00237F4D /* store_inv.swift */,
 				55BC43522B685C0500237F4D /* preps_inv.swift */,
+				552404FA2B85A32F00BABD28 /* PastryToPrepView.swift */,
 			);
 			path = hinnawi_bros_bagelcafe;
 			sourceTree = "<group>";
@@ -266,6 +269,7 @@
 				55BC43532B685C0500237F4D /* preps_inv.swift in Sources */,
 				551CE7ED2B68597E009A1532 /* ContentView.swift in Sources */,
 				551CE7EB2B68597E009A1532 /* hinnawi_bros_bagelcafeApp.swift in Sources */,
+				552404FB2B85A32F00BABD28 /* PastryToPrepView.swift in Sources */,
 				55BC43512B685B5A00237F4D /* store_inv.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
