@@ -1,6 +1,6 @@
 import SwiftUI
 
-
+/*________________________________________ Main Tab__________________________________________*/
 struct MainTabView: View {
     @State private var showingSavePDFAlert = false
     @State private var showingResetPDFAlert = false
@@ -37,6 +37,7 @@ struct MainTabView: View {
     private var controlButtons: some View {
         HStack {
             Button(action: {
+
                 saveAsPDF()
             }) {
                 Text("Save")
@@ -155,7 +156,7 @@ struct MainTabView: View {
                     }
             }
         .environmentObject(viewModel)
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic)) // Makes the TabView swipeable
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)) // Makes the TabView swipeable
         .animation(.default, value: selectedInventory)
                    .gesture(
                        DragGesture().onEnded { gesture in
@@ -195,14 +196,17 @@ struct MainTabView: View {
                 let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight))
                 
                 let data = pdfRenderer.pdfData { context in
-                    context.beginPage()
                     let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)]
                     let headerAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)]
                     
+                    // Start drawing bagel inventory data after inventory data
+                           context.beginPage() // Optionally start a new page for clarity
+                           
                     var yPosition: CGFloat = margin
-                    
-                    // Draw Headers
+
                     var xPosition = margin
+
+                   
                     for (index, header) in headers.enumerated() {
                         let columnRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[index], height: rowHeight)
                         header.draw(in: columnRect, withAttributes: headerAttributes)
@@ -243,7 +247,8 @@ struct MainTabView: View {
                             datesString.isEmpty ? "   -" : datesString
                         ]
                         
-                        for (index, content) in contents.enumerated() {                   drawLineVertical(from: CGPoint(x: 240, y: 50), to: CGPoint(x: 240, y: yPosition+30))
+                        for (index, content) in contents.enumerated() {                   
+                            //drawLineVertical(from: CGPoint(x: 240, y: 50), to: CGPoint(x: 240, y: yPosition+30))
                             let columnRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[index], height: currentRowHeight)
                             if index == 2 { // The dates column
                                 // Draw multiline dates
@@ -267,6 +272,55 @@ struct MainTabView: View {
                         context.cgContext.addLine(to: CGPoint(x: pageWidth - margin, y: yPosition))
                         context.cgContext.strokePath()
                     }
+                    
+                    yPosition = yPosition + 20;
+                    // Draw Bagel Inventory Header
+                    let bagelHeaders = ["Bagel Name", "Quantity"]
+                    // Assuming you define your column widths specifically for the bagel section
+                    let bagelColumnWidths = [contentWidth * 0.6, contentWidth * 0.4] // Example column widths for bagel data
+
+                    for (index, header) in bagelHeaders.enumerated() {
+                        
+                        let headerRect = CGRect(x:xPosition-400, y: yPosition, width: bagelColumnWidths[index], height: rowHeight)
+                        header.draw(in: headerRect, withAttributes: headerAttributes)
+                        xPosition += 200//bagelColumnWidths[index] // Move xPosition for the next header
+                    }
+                    yPosition += rowHeight // Move yPosition down for the next row of data
+
+                           
+                           // Draw bagel inventory items
+                           for (bagelName, quantity) in viewModel.bagelQuantities { // Assuming `viewModel.bagelQuantities` exists and is a dictionary
+                               xPosition = margin
+                               let bagelRowHeight: CGFloat = 20 // Or calculate based on content
+                               if yPosition + bagelRowHeight > pageHeight - margin {
+                                   context.beginPage() // Start a new page
+                                   yPosition = margin // Reset y position to top of the new page
+
+                                   // Redraw headers on the new page
+                                   xPosition = margin // Reset xPosition to start from the left margin for headers
+                                   for (index, header) in bagelHeaders.enumerated() {
+                                       let headerRect = CGRect(x: xPosition, y: yPosition, width: bagelColumnWidths[index], height: rowHeight)
+                                       header.draw(in: headerRect, withAttributes: headerAttributes)
+                                       xPosition += bagelColumnWidths[index] // Move xPosition for the next header
+                                   }
+                                   yPosition += rowHeight // Move yPosition down for the next row of data
+                               }
+                               xPosition = margin
+
+                               let bagelNameRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[0], height: bagelRowHeight)
+                               bagelName.draw(in: bagelNameRect, withAttributes: attributes)
+                               
+                               xPosition += columnWidths[0]
+                               let quantityRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[1], height: bagelRowHeight)
+                               "\(quantity)".draw(in: quantityRect, withAttributes: attributes)
+                               print("bagel row height:", bagelRowHeight)
+                               print("page height: ",pageHeight)
+                               yPosition += bagelRowHeight
+  
+                           }
+                    
+             
+                    
                 }
                 
                 return data
@@ -302,8 +356,6 @@ struct MainTabView: View {
                 path.addLine(to: endPoint)
                 path.stroke()
             }
-        
-    
 }
 
 struct InventoryTab: View {
@@ -318,16 +370,122 @@ struct InventoryTab: View {
 struct PastriesInvTab: View {
     var body: some View {
         // Customize this view as per your second tab's needs
-        Text("Content for Pastries Inventory tab")
+        PastriesInventory()
     }
 }
 
 struct BagelInvTab: View {
+    @EnvironmentObject var viewModel: InventoryViewModel
+
     var body: some View {
         BagelInventory()
+            .environmentObject(viewModel) // Make sure to pass the ViewModel
+    }
+}
+/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Main Tab ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+/**_________________________________________PASTRIES INVENTORY_____________________________________**/
+
+class PastryItem: Identifiable { // Ensure it conforms to Identifiable
+    let id = UUID()
+    var name: String
+    var quantity: Int
+
+    init(name: String, quantity: Int) {
+        self.name = name
+        self.quantity = quantity
+    }
+}
+class PastryInventoryViewModel: ObservableObject {
+    // Marking the items array as @Published so the view refreshes on updates
+    @Published var pastries: [PastryItem] = [
+        PastryItem(name: "Banana bread with nut", quantity: 0),
+        PastryItem(name: "Banana bread without nut", quantity: 0),
+        PastryItem(name: "Banana bread with nut", quantity: 0),
+        PastryItem(name: "Banana bread without nut", quantity: 0),
+        PastryItem(name: "Vegan brownie", quantity: 0),
+        PastryItem(name: "Cinnamon muffins", quantity: 0),
+        PastryItem(name: "Chocolate cake", quantity: 0),
+        PastryItem(name: "Red velvet cake", quantity: 0),
+        PastryItem(name: "Lemon poppy cake", quantity: 0),
+        PastryItem(name: "Chocolate chip cookie", quantity: 0),
+        PastryItem(name: "Chocolate and walnuts cookie", quantity: 0),
+        PastryItem(name: "Berrie cookie", quantity: 0),
+        PastryItem(name: "Double chocolate cookie", quantity: 0),
+        PastryItem(name: "Croissant", quantity: 0),
+        PastryItem(name: "Chocolatine", quantity: 0),
+        PastryItem(name: "Croissant aux amandes", quantity: 0),
+        // ... add other items
+    ]
+    // Add methods to increment and decrement quantity that will update the @Published pastries array
+    func incrementQuantity(for pastry: PastryItem) {
+        if let index = pastries.firstIndex(where: { $0.id == pastry.id }) {
+            pastries[index].quantity += 1
+            // Triggering an update by making a change to the array
+            pastries[index] = pastries[index]
+        }
+    }
+    
+    func decrementQuantity(for pastry: PastryItem) {
+        if let index = pastries.firstIndex(where: { $0.id == pastry.id }), pastries[index].quantity > 0 {
+            pastries[index].quantity -= 1
+            // Triggering an update by making a change to the array
+            pastries[index] = pastries[index]
+        }
+    }
+    
+}
+
+struct PastriesInventory: View {
+    @ObservedObject var viewModel = PastryInventoryViewModel()
+    
+    var body: some View {
+        VStack{
+            List {
+                ForEach(viewModel.pastries) { pastry in
+                    HStack {
+                        Text(pastry.name)    
+                            .font(.system(size: 22, weight: .regular)) // Customize font size and weight
+                        Spacer()
+                        // Minus button
+                        Button(action: {
+                            viewModel.decrementQuantity(for: pastry)
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(BorderlessButtonStyle()) // Removes the default button styling that might interfere with the tap
+                        Text("\(pastry.quantity)")
+                            .font(.system(size: 22, weight: .regular)) // Customize font size and weight
+                            .frame(minWidth: 50, alignment: .center)
+                        // Plus button
+                        Button(action: {
+                            viewModel.incrementQuantity(for: pastry)
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle()) // Removes the default button styling that might interfere with the tap
+                    }
+                    .buttonStyle(PlainButtonStyle()) // Apply to the whole row to prevent row selection style
+                }
+            }
+            VStack{
+                Text("*** This Pastries Tab is under development ***")
+                    .italic() // Makes the text italic
+                    .foregroundColor(.red) // Sets the text color to red
+            }
+        }
+        
+        .background(Color.white)
     }
 }
 
+/*____________________________________ Bagel Inventory_______________________________________________*/
 struct BagelInventory: View {
     let imageNames = [
         "Sesame Bagel", "Everything Bagel", "Plain Bagel", "Poppy Seed Bagel", "Multigrain Bagel",
@@ -337,39 +495,63 @@ struct BagelInventory: View {
 
     @State private var rotationAngle: Double = 0
     @State private var quantities = Array(repeating: 0, count: 10)
+    @State private var quantitiesUnit = Array(repeating: 0, count: 10)
+    @EnvironmentObject var viewModel: InventoryViewModel // Assuming you're using EnvironmentObject
+
+    @State private var swipeActionTriggered = false
 
     var body: some View {
         HStack {
             // Quantities display
-            BagelQuantitiesView(imageNames: imageNames, quantities: $quantities)
+            BagelQuantitiesView(imageNames: imageNames, quantities: $quantities, quantitiesUnit: $quantitiesUnit)
                 .position(x:900, y:170)
             GeometryReader { geometry in
                 let baseRadius = min(geometry.size.width, geometry.size.height) / 2 - 250
                 ZStack {
                     ForEach(imageNames.indices, id: \.self) { index in
-                        self.bagelImage(at: index, with: baseRadius, in: geometry.size, quantity: $quantities[index])
+                        self.bagelImage(at: index, with: baseRadius, in: geometry.size, quantity: $quantities[index], quantityUnit: $quantitiesUnit[index])
                     }
                 }
                 .gesture(
-                    DragGesture()
+                    DragGesture()                        
+                        .onChanged { value in
+                        // Immediate visual feedback
+                        if abs(value.translation.width) > 1 { // Lower threshold for responsiveness
+                            swipeActionTriggered = true
+                        }
+                    }
                         .onEnded { value in
-                            self.handleSwipe(value.translation.width)
+                            
+                            swipeActionTriggered = false
+                            let minimumDistance: CGFloat = 5 // Adjust this value based on your preference
+                            let translationWidth = value.translation.width
+
+                            // Determine the direction of the swipe (right or left)
+                            let swipeDirection: String = translationWidth > 0 ? "Right" : "Left"
+
+                            // Check if the swipe distance exceeds the minimum threshold
+                            if abs(translationWidth) > minimumDistance {
+                                // Handle the swipe with increased sensitivity
+                                self.handleSwipe(translationWidth)
+                                print("Swipe \(swipeDirection) with distance: \(translationWidth)")
+                            }
                         }
                 )
+
             }
             .frame(width: 1800, height: 1800)
         }
         
     }
 
-    private func bagelImage(at index: Int, with baseRadius: CGFloat, in size: CGSize, quantity: Binding<Int>) -> some View {
+    private func bagelImage(at index: Int, with baseRadius: CGFloat, in size: CGSize, quantity: Binding<Int>, quantityUnit: Binding<Int>) -> some View {
         let angle = computeAngle(for: index, size: size)
         let xOffset: CGFloat = 750
         let yOffset: CGFloat = 1400
         let x = cos(angle) * baseRadius + xOffset
         let y = sin(angle) * baseRadius + yOffset
 
-        return BagelImage(name: imageNames[index], x: x, y: y, quantity: quantity)
+        return BagelImage(name: imageNames[index], x: x, y: y, quantity: quantity, quantityUnit: quantityUnit)
     }
 
     private func computeAngle(for index: Int, size: CGSize) -> Double {
@@ -389,7 +571,8 @@ struct BagelImage: View {
     let x: CGFloat
     let y: CGFloat
     @Binding var quantity: Int // Bind quantity to enable updates
-
+    @Binding var quantityUnit: Int // Bind quantity to enable updates
+    
     var body: some View {
         VStack {
             Image(name) // Display the bagel image
@@ -402,10 +585,20 @@ struct BagelImage: View {
                 .fontWeight(.bold)
                 .foregroundColor(.primary)
 
-            Text("Quantity: \(quantity)") // Display the current quantity
+            Text("Quantity: \(quantity) bags \(quantityUnit) unit") // Display the current quantity
 
             HStack(spacing: 20) {
                 // Minus button
+                Button(action: {
+                    if self.quantity > 0 { // Prevent quantity from going negative
+                        self.quantityUnit -= 1
+                    }
+                }) {
+                    Image(systemName: "minus.circle.fill")
+                        .resizable()
+                        .frame(width: 44, height: 44)
+                        .foregroundColor(.gray.opacity(0.5))
+                }
                 Button(action: {
                     if self.quantity > 0 { // Prevent quantity from going negative
                         self.quantity -= 1
@@ -413,18 +606,25 @@ struct BagelImage: View {
                 }) {
                     Image(systemName: "minus.circle.fill")
                         .resizable()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 75, height: 75)
                         .foregroundColor(.red)
                 }
-
-                // Plus button
                 Button(action: {
                     self.quantity += 1 // Increment the quantity
                 }) {
                     Image(systemName: "plus.circle.fill")
                         .resizable()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 75, height: 75)
                         .foregroundColor(.green)
+                }
+                // Plus button
+                Button(action: {
+                    self.quantityUnit += 1 // Increment the quantity
+                }) {
+                    Image(systemName: "plus.circle.fill")
+                        .resizable()
+                        .frame(width: 44, height: 44)
+                        .foregroundColor(.gray.opacity(0.5))
                 }
             }
         }
@@ -436,7 +636,9 @@ struct BagelImage: View {
 struct BagelQuantitiesView: View {
     let imageNames: [String]
     @Binding var quantities: [Int]
-
+    @Binding var quantitiesUnit: [Int]
+    @EnvironmentObject var viewModel: InventoryViewModel // Assuming you're using EnvironmentObject
+    
     var body: some View {
         // Define the columns for the grid
         let columns: [GridItem] = [
@@ -445,8 +647,11 @@ struct BagelQuantitiesView: View {
         ]
 
         // Filter the bagels with quantities of 1 or more
-        let filteredBagels = imageNames.indices.filter { quantities[$0] >= 1 }
-            .map { (index: $0, name: imageNames[$0], quantity: quantities[$0]) }
+        let filteredBagels = imageNames.indices.filter { quantities[$0] > 0 || quantitiesUnit[$0] > 0 }
+            .map { (index: $0, name: imageNames[$0], quantity: quantities[$0], quantityUnit: quantitiesUnit[$0]) }
+        
+        let filteredBagelNames2 = imageNames.indices.filter { quantities[$0] > 0 || quantitiesUnit[$0] > 0 }
+            .map { imageNames[$0] }
 
         // Use a ScrollView for vertical scrolling if the content exceeds the view's height
         ScrollView {
@@ -457,20 +662,42 @@ struct BagelQuantitiesView: View {
                         .font(.headline) // Customize the font as needed
                         .padding(.vertical, 10) // Add padding for better readability
                     
-                    Text("\(item.quantity)") // Display the quantity
+                    Text("\(item.quantity) bags \(item.quantityUnit) unit") // Display the quantity
                         .font(.body) // Customize the font as needed
                         .padding(.vertical, 10) // Add padding for better readability
+                    
+                    .onAppear {
+                        self.viewModel.updateBagelQuantities(names: filteredBagelNames2, quantities: self.quantities, quantitiesUnit: self.quantitiesUnit)
+                    }
                 }
             }
             .padding(.horizontal) // Add horizontal padding to the grid
         }
         .frame(width: 1000, height: 300) // Set the frame size as needed
+        
+    }
+}
+extension InventoryViewModel {
+    func updateBagelQuantities(names: [String], quantities: [Int], quantitiesUnit: [Int]) {
+        for (index, name) in names.enumerated() {
+            let quantity = quantities[index]
+            let quantityUnit = quantitiesUnit[index]
+            bagelQuantities[name] = "\(quantity) bag   \(quantityUnit) unit";
+        }
     }
 }
 
+class BagelInventoryViewModel: ObservableObject {
+    @Published var quantities = Array(repeating: 0, count: 10)
+    @Published var quantitiesUnit = Array(repeating: 0, count: 10)
+    
+    // Add methods here to modify quantities if needed
+}
+
+/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Bagel Inventory ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 
-/******************************************     FOOD INVENTORY      *******************************************************************/
+/****************************************************     FOOD INVENTORY      *******************************************************************/
 struct SwipeGestureDemonstrationUpDown: View {
     @Binding var selectedItem: String
     var items: [String]
@@ -551,66 +778,6 @@ struct SwipeGestureDemonstration: View {
     }
 }
 
-
-
-class InventoryViewModel: ObservableObject {
-    @Published var itemCounts: [String: Double] = [:]
-    @Published var itemDates: [String: [Date]] = [:]
-    
-    func resetValues() {
-        // Reset all counts to 0
-        for (item, _) in itemCounts {
-            itemCounts[item] = 0
-        }
-        
-        // Clear all dates
-        for (item, _) in itemDates {
-            itemDates[item] = []
-        }
-        
-        // Alternatively, if you want to completely clear the dictionaries:
-        itemCounts.removeAll()
-        itemDates.removeAll()
-    }
-    
-    func updateItemCount(for item: String, newValue: Double) {
-        objectWillChange.send() // Explicitly notify about the change
-        itemCounts[item] = newValue
-
-        // Update the dates for the item
-        if let existingDates = itemDates[item] {
-            if newValue > Double(existingDates.count) {
-                // If the new value is greater, add more dates to the existing array
-                itemDates[item] = existingDates + Array(repeating: Date(), count: Int(Double(newValue) - Double(existingDates.count)))
-            } else {
-                // If the new value is less or equal, just keep the array up to the new value
-                itemDates[item] = Array(existingDates.prefix(Int(newValue)))
-            }
-        } else {
-            // If there are no existing dates for the item, create a new array
-            itemDates[item] = Array(repeating: Date(), count: Int(newValue))
-        }
-
-        print("Item: \(item), New Value: \(newValue)") // Debugging
-    }
-    
-    // Function to get a formatted string of dates for an item
-    func formattedDatesString(for item: String) -> String {
-        guard let dates = itemDates[item], !dates.isEmpty else {
-            return "    -"
-        }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM dd"
-        return dates
-            .map { dateFormatter.string(from: $0) }
-            .joined(separator: "\n")
-    }
-
-
-
-    // ... other properties if needed
-}
-
 struct DatePickerModalView: View {
     var itemCount: Int
     var itemName: String  // Add this line
@@ -675,7 +842,6 @@ struct DatePickerModalView: View {
                                 .font(.system(size: 58)) // Set your desired font size here Adjust the font as needed
                                                     .foregroundColor(.black) // Text color
                                                     .offset(x: 135, y: 15) // Adjust the position to fit within the rectangle
-                                          
                         }
                     }
                 }
@@ -686,7 +852,6 @@ struct DatePickerModalView: View {
             .foregroundColor(.red) // Set the text color to red
             .frame(minWidth: 0, maxWidth: .infinity, alignment: .center) // Optional: Adjust alignment and width as needed
             .padding() // Optional: Add some padding around the text
-
     }
 }
 
@@ -1011,6 +1176,66 @@ struct InventoryGridView: View {
     }
 }
 
+
+class InventoryViewModel: ObservableObject {
+    @Published var itemCounts: [String: Double] = [:]
+    @Published var itemDates: [String: [Date]] = [:]
+    @Published var bagelQuantities: [String: String] = [:]
+
+    func resetValues() {
+        // Reset all counts to 0
+        for (item, _) in itemCounts {
+            itemCounts[item] = 0
+        }
+        
+        // Clear all dates
+        for (item, _) in itemDates {
+            itemDates[item] = []
+        }
+        
+        // Alternatively, if you want to completely clear the dictionaries:
+        itemCounts.removeAll()
+        itemDates.removeAll()
+    }
+    
+    func updateItemCount(for item: String, newValue: Double) {
+        objectWillChange.send() // Explicitly notify about the change
+        itemCounts[item] = newValue
+
+        // Update the dates for the item
+        if let existingDates = itemDates[item] {
+            if newValue > Double(existingDates.count) {
+                // If the new value is greater, add more dates to the existing array
+                itemDates[item] = existingDates + Array(repeating: Date(), count: Int(Double(newValue) - Double(existingDates.count)))
+            } else {
+                // If the new value is less or equal, just keep the array up to the new value
+                itemDates[item] = Array(existingDates.prefix(Int(newValue)))
+            }
+        } else {
+            // If there are no existing dates for the item, create a new array
+            itemDates[item] = Array(repeating: Date(), count: Int(newValue))
+        }
+
+        print("Item: \(item), New Value: \(newValue)") // Debugging
+    }
+    
+    // Function to get a formatted string of dates for an item
+    func formattedDatesString(for item: String) -> String {
+        guard let dates = itemDates[item], !dates.isEmpty else {
+            return "    -"
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd"
+        return dates
+            .map { dateFormatter.string(from: $0) }
+            .joined(separator: "\n")
+    }
+
+
+
+    // ... other properties if needed
+}
+/*********************************************************************FOOD INVENTORY *******************************************************/
 
 struct MainTabView_Previews: PreviewProvider {
     static var previews: some View {

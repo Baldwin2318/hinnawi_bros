@@ -3,4 +3,70 @@
    uuid = "01D2E32A-45CA-4EAD-BAAA-E17FF0AA30AA"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B9DC8BFA-BAC6-485B-937D-52E777CD6189"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "hinnawi_bros_bagelcafe/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "79FAD465-5327-4B38-8177-8507C9BD23EC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "hinnawi_bros_bagelcafe/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "79FAD465-5327-4B38-8177-8507C9BD23EC - 5ed6b968353ee392"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "hinnawi_bros_bagelcafe.PrepsInvView.body.getter : some"
+                  moduleName = "hinnawi_bros_bagelcafe"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/baldwinkielmalabanan/Desktop/hinnawi_bros_bagelcafe/hinnawi_bros_bagelcafe/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "116">
+               </Location>
+               <Location
+                  uuid = "79FAD465-5327-4B38-8177-8507C9BD23EC - 5ed6b968353ee392"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "hinnawi_bros_bagelcafe.PrepsInvView.body.getter : some"
+                  moduleName = "hinnawi_bros_bagelcafe"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/baldwinkielmalabanan/Desktop/hinnawi_bros_bagelcafe/hinnawi_bros_bagelcafe/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "164">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
