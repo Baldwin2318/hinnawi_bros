@@ -309,10 +309,13 @@ struct MainTabView: View {
                     yPosition += rowHeight // Move yPosition down for the next row of data
 
                            
+                    let allBagelNames = Set(viewModel.bagelQuantitiesIMG.keys).union(viewModel.bagelQuantityUnitsIMG.keys)
+
                     // Draw bagel inventory items
-                    // Draw bagel inventory items
-                    for (bagelName, quantity) in viewModel.bagelQuantitiesIMG { // Assuming `viewModel.bagelQuantities` exists and is a dictionary
-                        let quantityUnit = viewModel.bagelQuantityUnitsIMG[bagelName] ?? 0
+                    for (bagelName) in allBagelNames { // Assuming `viewModel.bagelQuantities` exists and is a dictionary
+                        let quantity = viewModel.bagelQuantitiesIMG[bagelName] ?? 0 // Default to 0 if not found
+                        let quantityUnit = viewModel.bagelQuantityUnitsIMG[bagelName] ?? 0 // Already defaults to 0 if not found
+
                         xPosition = margin
                         let bagelRowHeight: CGFloat = 20 // Or calculate based on content
                         if yPosition + bagelRowHeight > pageHeight - margin {
