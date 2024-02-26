@@ -20,7 +20,7 @@ struct MainTabView: View {
     
     // Define the items
     let items = [
-        "Bacon", "Eggs", "Veggie patty", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Salmon", "Mix Vege",
+        "Bacon", "Eggs", "Veggie patty", "Chicken (100g)", "Tofu", "Smoked Meat (90g)", "Turkey (60)", "Salmon (70g)", "Mix Vege",
         "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
         "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
         "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"
@@ -195,9 +195,21 @@ struct MainTabView: View {
                 let headers = ["Item", "# of Contnr.", "Date", "To Prep"]
                 let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight))
                 
+                let leftMargin: CGFloat = 50
+                let rightMargin: CGFloat = 50
+                let topMargin: CGFloat = 50
+                let bottomMargin: CGFloat = 50
+                
                 let data = pdfRenderer.pdfData { context in
                     let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)]
                     let headerAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)]
+                    
+                    // Get and format the current date and time
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    dateFormatter.timeStyle = .medium
+                    let currentTime = dateFormatter.string(from: Date())
+                    
                     
                     // Start drawing bagel inventory data after inventory data
                            context.beginPage() // Optionally start a new page for clarity
@@ -205,8 +217,17 @@ struct MainTabView: View {
                     var yPosition: CGFloat = margin
 
                     var xPosition = margin
-
+                    
+                    // Function to draw text at a position, adjusting for left margin
+                    func drawTextTitle(_ text: String, x: CGFloat, y: CGFloat, usingAttributes textAttributes: [NSAttributedString.Key: UIFont]) {
+                        let rect = CGRect(x: x + leftMargin, y: y, width: contentWidth, height: 20)
+                        text.draw(in: rect, withAttributes: textAttributes)
+                    }
                    
+                    
+                    drawTextTitle("Generated: \(currentTime)", x: 300, y: (topMargin - 30), usingAttributes: attributes)
+                    drawTextTitle("Store: President Kennedy", x: 300, y: (topMargin - 30)+15, usingAttributes: attributes)
+                    
                     for (index, header) in headers.enumerated() {
                         let columnRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[index], height: rowHeight)
                         header.draw(in: columnRect, withAttributes: headerAttributes)
@@ -273,7 +294,7 @@ struct MainTabView: View {
                         context.cgContext.strokePath()
                     }
                     
-                    yPosition = yPosition + 20;
+                    yPosition = yPosition + 50;
                     // Draw Bagel Inventory Header
                     let bagelHeaders = ["Bagel Name", "Quantity"]
                     // Assuming you define your column widths specifically for the bagel section
@@ -288,38 +309,104 @@ struct MainTabView: View {
                     yPosition += rowHeight // Move yPosition down for the next row of data
 
                            
-                           // Draw bagel inventory items
-                           for (bagelName, quantity) in viewModel.bagelQuantities { // Assuming `viewModel.bagelQuantities` exists and is a dictionary
-                               xPosition = margin
-                               let bagelRowHeight: CGFloat = 20 // Or calculate based on content
-                               if yPosition + bagelRowHeight > pageHeight - margin {
-                                   context.beginPage() // Start a new page
-                                   yPosition = margin // Reset y position to top of the new page
+                    // Draw bagel inventory items
+                    // Draw bagel inventory items
+                    for (bagelName, quantity) in viewModel.bagelQuantitiesIMG { // Assuming `viewModel.bagelQuantities` exists and is a dictionary
+                        let quantityUnit = viewModel.bagelQuantityUnitsIMG[bagelName] ?? 0
+                        xPosition = margin
+                        let bagelRowHeight: CGFloat = 20 // Or calculate based on content
+                        if yPosition + bagelRowHeight > pageHeight - margin {
+                            context.beginPage() // Start a new page
+                            yPosition = margin // Reset y position to top of the new page
+                            
+                            // Redraw headers on the new page
+                            for (index, header) in bagelHeaders.enumerated() {
+                                let headerRect = CGRect(x: xPosition, y: yPosition, width: bagelColumnWidths[index], height: rowHeight)
+                                header.draw(in: headerRect, withAttributes: headerAttributes)
+                                xPosition += bagelColumnWidths[index] // Adjust xPosition for the next header
+                            }
+                            yPosition += rowHeight // Move yPosition down for the next row of data
+                        }
+                        xPosition = margin
+                        
+                        let bagelNameRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[0], height: bagelRowHeight)
+                        bagelName.draw(in: bagelNameRect, withAttributes: attributes)
+                        
+                        xPosition += columnWidths[0] // Move xPosition right for the quantity text
 
-                                   // Redraw headers on the new page
-                                   xPosition = margin // Reset xPosition to start from the left margin for headers
-                                   for (index, header) in bagelHeaders.enumerated() {
-                                       let headerRect = CGRect(x: xPosition, y: yPosition, width: bagelColumnWidths[index], height: rowHeight)
-                                       header.draw(in: headerRect, withAttributes: headerAttributes)
-                                       xPosition += bagelColumnWidths[index] // Move xPosition for the next header
-                                   }
-                                   yPosition += rowHeight // Move yPosition down for the next row of data
-                               }
-                               xPosition = margin
+                        // Declare quantityRect here, after adjusting xPosition
+                        let quantityRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[1], height: bagelRowHeight)
 
-                               let bagelNameRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[0], height: bagelRowHeight)
-                               bagelName.draw(in: bagelNameRect, withAttributes: attributes)
-                               
-                               xPosition += columnWidths[0]
-                               let quantityRect = CGRect(x: xPosition, y: yPosition, width: columnWidths[1], height: bagelRowHeight)
-                               "\(quantity)".draw(in: quantityRect, withAttributes: attributes)
-                               print("bagel row height:", bagelRowHeight)
-                               print("page height: ",pageHeight)
-                               yPosition += bagelRowHeight
-  
-                           }
+                        let quantityText = "\(quantity) bags and \(quantityUnit) units"
+                        let textAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)] // Adjust font size as needed
+                        let textSize = quantityText.size(withAttributes: textAttributes)
+
+                        if textSize.width > columnWidths[1] {
+                            // If text doesn't fit, adjust the font size
+                            let adjustedAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 10)] // Use a smaller font size
+                            quantityText.draw(in: quantityRect, withAttributes: adjustedAttributes)
+                        } else {
+                            // If it fits, draw as normal
+                            quantityText.draw(in: quantityRect, withAttributes: textAttributes)
+                        }
+
+                        print("******************", quantityText)
+                        yPosition += bagelRowHeight // Move yPosition down for the next row
+                    }
+
                     
-             
+                    yPosition = yPosition + 50;
+
+                    // Draw Pastries Inventory Header
+                    let pastryHeaders = ["Pastry Name", "Quantity"]
+                    let pastryColumnWidths = [contentWidth * 0.6, contentWidth * 0.4] // Example column widths for pastry data
+                    xPosition = margin // Reset the xPosition for the new section
+
+                    // Drawing the headers for the pastries section
+                    for (index, header) in pastryHeaders.enumerated() {
+                        let headerRect = CGRect(x: xPosition, y: yPosition, width: pastryColumnWidths[index], height: rowHeight)
+                        header.draw(in: headerRect, withAttributes: headerAttributes)
+                        xPosition += pastryColumnWidths[index] // Move xPosition for the next header
+                    }
+                    yPosition += rowHeight // Move yPosition down for the next row
+
+                    // Iterate over the pastries to draw each
+                    for pastry in viewModel.pastries {
+                        if (pastry.quantity != 0) {
+                            xPosition = margin // Reset xPosition for each new row
+
+                            // Ensure there's enough space for the next row, or start a new page
+                            if yPosition + rowHeight > pageHeight - margin {
+                                context.beginPage() // Start a new page if not enough space
+                                yPosition = margin // Reset the y position
+                            }
+
+                            // Draw the pastry name
+                            let nameRect = CGRect(x: xPosition, y: yPosition, width: pastryColumnWidths[0], height: rowHeight)
+                            pastry.name.draw(in: nameRect, withAttributes: attributes)
+                            xPosition += pastryColumnWidths[0]
+
+                            // Draw the quantity
+                            let quantityRect = CGRect(x: xPosition, y: yPosition, width: pastryColumnWidths[1], height: rowHeight)
+                            "\(pastry.quantity)".draw(in: quantityRect, withAttributes: attributes)
+
+                            // Move yPosition down for the next row, before drawing the line
+                            yPosition += rowHeight
+
+                            // Drawing a horizontal line after the row
+                            context.cgContext.setStrokeColor(UIColor.black.cgColor) // Set the line color
+                            context.cgContext.setLineWidth(1) // Set the line width
+                            context.cgContext.move(to: CGPoint(x: margin, y: yPosition)) // Starting point of the line
+                            context.cgContext.addLine(to: CGPoint(x: pageWidth - margin, y: yPosition)) // Ending point of the line
+                            context.cgContext.strokePath() // Render the line
+
+                            // Optionally, add a small vertical space after the line before starting the next row
+                            yPosition += 2 // Adjust the space as needed
+                        }
+
+                    }
+
+
                     
                 }
                 
@@ -396,48 +483,10 @@ class PastryItem: Identifiable { // Ensure it conforms to Identifiable
         self.quantity = quantity
     }
 }
-class PastryInventoryViewModel: ObservableObject {
-    // Marking the items array as @Published so the view refreshes on updates
-    @Published var pastries: [PastryItem] = [
-        PastryItem(name: "Banana bread with nut", quantity: 0),
-        PastryItem(name: "Banana bread without nut", quantity: 0),
-        PastryItem(name: "Banana bread with nut", quantity: 0),
-        PastryItem(name: "Banana bread without nut", quantity: 0),
-        PastryItem(name: "Vegan brownie", quantity: 0),
-        PastryItem(name: "Cinnamon muffins", quantity: 0),
-        PastryItem(name: "Chocolate cake", quantity: 0),
-        PastryItem(name: "Red velvet cake", quantity: 0),
-        PastryItem(name: "Lemon poppy cake", quantity: 0),
-        PastryItem(name: "Chocolate chip cookie", quantity: 0),
-        PastryItem(name: "Chocolate and walnuts cookie", quantity: 0),
-        PastryItem(name: "Berrie cookie", quantity: 0),
-        PastryItem(name: "Double chocolate cookie", quantity: 0),
-        PastryItem(name: "Croissant", quantity: 0),
-        PastryItem(name: "Chocolatine", quantity: 0),
-        PastryItem(name: "Croissant aux amandes", quantity: 0),
-        // ... add other items
-    ]
-    // Add methods to increment and decrement quantity that will update the @Published pastries array
-    func incrementQuantity(for pastry: PastryItem) {
-        if let index = pastries.firstIndex(where: { $0.id == pastry.id }) {
-            pastries[index].quantity += 1
-            // Triggering an update by making a change to the array
-            pastries[index] = pastries[index]
-        }
-    }
-    
-    func decrementQuantity(for pastry: PastryItem) {
-        if let index = pastries.firstIndex(where: { $0.id == pastry.id }), pastries[index].quantity > 0 {
-            pastries[index].quantity -= 1
-            // Triggering an update by making a change to the array
-            pastries[index] = pastries[index]
-        }
-    }
-    
-}
+
 
 struct PastriesInventory: View {
-    @ObservedObject var viewModel = PastryInventoryViewModel()
+    @EnvironmentObject var viewModel: InventoryViewModel // Assuming you're using EnvironmentObject
     
     var body: some View {
         VStack{
@@ -475,9 +524,9 @@ struct PastriesInventory: View {
                 }
             }
             VStack{
-                Text("*** This Pastries Tab is under development ***")
-                    .italic() // Makes the text italic
-                    .foregroundColor(.red) // Sets the text color to red
+//                Text("*** This Pastries Tab is under development ***")
+//                    .italic() // Makes the text italic
+//                    .foregroundColor(.red) // Sets the text color to red
             }
         }
         
@@ -505,6 +554,7 @@ struct BagelInventory: View {
             // Quantities display
             BagelQuantitiesView(imageNames: imageNames, quantities: $quantities, quantitiesUnit: $quantitiesUnit)
                 .position(x:900, y:170)
+
             GeometryReader { geometry in
                 let baseRadius = min(geometry.size.width, geometry.size.height) / 2 - 250
                 ZStack {
@@ -572,6 +622,7 @@ struct BagelImage: View {
     let y: CGFloat
     @Binding var quantity: Int // Bind quantity to enable updates
     @Binding var quantityUnit: Int // Bind quantity to enable updates
+    @EnvironmentObject var viewModel: InventoryViewModel // Assuming you're using EnvironmentObject
     
     var body: some View {
         VStack {
@@ -585,14 +636,14 @@ struct BagelImage: View {
                 .fontWeight(.bold)
                 .foregroundColor(.primary)
 
-            Text("Quantity: \(quantity) bags \(quantityUnit) unit") // Display the current quantity
+            Text("Quantity: \(viewModel.bagelQuantitiesIMG[name, default: 0]) bags \(viewModel.bagelQuantityUnitsIMG[name, default: 0]) unit")
 
             HStack(spacing: 20) {
                 // Minus button
                 Button(action: {
-                    if self.quantity > 0 { // Prevent quantity from going negative
-                        self.quantityUnit -= 1
-                    }
+                    viewModel.decrementBagelQuantityUnit(for: name)
+                           
+                    
                 }) {
                     Image(systemName: "minus.circle.fill")
                         .resizable()
@@ -600,9 +651,8 @@ struct BagelImage: View {
                         .foregroundColor(.gray.opacity(0.5))
                 }
                 Button(action: {
-                    if self.quantity > 0 { // Prevent quantity from going negative
-                        self.quantity -= 1
-                    }
+                    viewModel.decrementBagelQuantity(for: name)
+                           
                 }) {
                     Image(systemName: "minus.circle.fill")
                         .resizable()
@@ -610,8 +660,8 @@ struct BagelImage: View {
                         .foregroundColor(.red)
                 }
                 Button(action: {
-                    self.quantity += 1 // Increment the quantity
-                }) {
+                    viewModel.incrementBagelQuantity(for: name)
+                          }) {
                     Image(systemName: "plus.circle.fill")
                         .resizable()
                         .frame(width: 75, height: 75)
@@ -619,8 +669,8 @@ struct BagelImage: View {
                 }
                 // Plus button
                 Button(action: {
-                    self.quantityUnit += 1 // Increment the quantity
-                }) {
+                    viewModel.incrementBagelQuantityUnit(for: name)
+                               }) {
                     Image(systemName: "plus.circle.fill")
                         .resizable()
                         .frame(width: 44, height: 44)
@@ -847,9 +897,9 @@ struct DatePickerModalView: View {
                 }
             }.padding(100).environment(\.colorScheme, .light)
             .frame(height: 250) // Adjust the height of the ScrollView
-        Text("Swipe left or right to navigate through multiple containers")
+        Text("Select the date marked on container")
             .italic() // Make the text italic
-            .foregroundColor(.red) // Set the text color to red
+            .foregroundColor(.blue) // Set the text color to red
             .frame(minWidth: 0, maxWidth: .infinity, alignment: .center) // Optional: Adjust alignment and width as needed
             .padding() // Optional: Add some padding around the text
     }
@@ -1181,7 +1231,68 @@ class InventoryViewModel: ObservableObject {
     @Published var itemCounts: [String: Double] = [:]
     @Published var itemDates: [String: [Date]] = [:]
     @Published var bagelQuantities: [String: String] = [:]
+    @Published var bagelQuantitiesIMG: [String: Int] = [:]
+    @Published var bagelQuantityUnitsIMG: [String: Int] = [:]
 
+    @Published var pastries: [PastryItem] = [
+        PastryItem(name: "Banana bread with nut", quantity: 0),
+        PastryItem(name: "Banana bread without nut", quantity: 0),
+        PastryItem(name: "Banana bread with nut", quantity: 0),
+        PastryItem(name: "Banana bread without nut", quantity: 0),
+        PastryItem(name: "Vegan brownie", quantity: 0),
+        PastryItem(name: "Cinnamon muffins", quantity: 0),
+        PastryItem(name: "Chocolate cake", quantity: 0),
+        PastryItem(name: "Red velvet cake", quantity: 0),
+        PastryItem(name: "Lemon poppy cake", quantity: 0),
+        PastryItem(name: "Chocolate chip cookie", quantity: 0),
+        PastryItem(name: "Chocolate and walnuts cookie", quantity: 0),
+        PastryItem(name: "Berrie cookie", quantity: 0),
+        PastryItem(name: "Double chocolate cookie", quantity: 0),
+        PastryItem(name: "Croissant", quantity: 0),
+        PastryItem(name: "Chocolatine", quantity: 0),
+        PastryItem(name: "Croissant aux amandes", quantity: 0),
+        // ... add other items
+    ]
+    
+    // Functions to update bagel quantities and units
+       func incrementBagelQuantity(for name: String) {
+           bagelQuantitiesIMG[name, default: 0] += 1
+       }
+
+       func decrementBagelQuantity(for name: String) {
+           if let quantity = bagelQuantitiesIMG[name], quantity > 0 {
+               bagelQuantitiesIMG[name] = quantity - 1
+           }
+       }
+
+       func incrementBagelQuantityUnit(for name: String) {
+           bagelQuantityUnitsIMG[name, default: 0] += 1
+       }
+
+       func decrementBagelQuantityUnit(for name: String) {
+           if let quantityUnit = bagelQuantityUnitsIMG[name], quantityUnit > 0 {
+               bagelQuantityUnitsIMG[name] = quantityUnit - 1
+           }
+       }
+    
+    // Add methods to increment and decrement quantity that will update the @Published pastries array
+    func incrementQuantity(for pastry: PastryItem) {
+        if let index = pastries.firstIndex(where: { $0.id == pastry.id }) {
+            pastries[index].quantity += 1
+            // Triggering an update by making a change to the array
+            pastries[index] = pastries[index]
+        }
+    }
+    
+    func decrementQuantity(for pastry: PastryItem) {
+        if let index = pastries.firstIndex(where: { $0.id == pastry.id }), pastries[index].quantity > 0 {
+            pastries[index].quantity -= 1
+            // Triggering an update by making a change to the array
+            pastries[index] = pastries[index]
+        }
+    }
+    
+    
     func resetValues() {
         // Reset all counts to 0
         for (item, _) in itemCounts {
@@ -1193,9 +1304,22 @@ class InventoryViewModel: ObservableObject {
             itemDates[item] = []
         }
         
+        // Reset pastries quantities
+        for index in pastries.indices {
+            pastries[index].quantity = 0
+        }
+
+        
+        // Reset bagel quantities and units
+        bagelQuantitiesIMG.keys.forEach { bagelQuantitiesIMG[$0] = 0 }
+        bagelQuantityUnitsIMG.keys.forEach { bagelQuantityUnitsIMG[$0] = 0 }
+        
         // Alternatively, if you want to completely clear the dictionaries:
         itemCounts.removeAll()
         itemDates.removeAll()
+        bagelQuantitiesIMG.removeAll()
+        bagelQuantityUnitsIMG.removeAll()
+        bagelQuantities.removeAll()
     }
     
     func updateItemCount(for item: String, newValue: Double) {

@@ -16,17 +16,19 @@ struct ContentView: View {
     @State private var showStoreInvView = false
     @State private var showPrepsInvView = false
     @State private var showPastryToPrepInvView = false
+    @State private var showFoodToPrepInvView = false
     
     @StateObject private var viewModel = InventoryViewModel() // Create a single instance
+    @StateObject private var viewModel_FTP = FoodToPrepViewModel() // Create a single instance
 
     private var buttons: [ButtonData] {
         [
-            ButtonData(symbolName: "checklist", title: "To Do List", isSystemIcon: true, action: incrementButtonCount),
-            ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
-            ButtonData(symbolName: "leaf.arrow.triangle.circlepath", title: "Food To Prep", isSystemIcon: true, action: incrementButtonCount),
+  //          ButtonData(symbolName: "checklist", title: "Closing Check List", isSystemIcon: true, action: incrementButtonCount),
+  //          ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
+  //          ButtonData(symbolName: "leaf.arrow.triangle.circlepath", title: "Prep List", isSystemIcon: true, action: gotoFoodToPreps),
             //ButtonData(symbolName: "bagel", title: "Sandwich", isSystemIcon: false, action: customAction),
-            ButtonData(symbolName: "veggie", title: "Food Inventory", isSystemIcon: false, action: gotoInventoryPreps),
-            ButtonData(symbolName: "tray", title: "Pasty To Prep", isSystemIcon: true, action: gotoPastryToPreps),
+            ButtonData(symbolName: "veggie", title: "Inventory End of Day", isSystemIcon: false, action: gotoInventoryPreps),
+ //           ButtonData(symbolName: "tray", title: "Pastries Production", isSystemIcon: true, action: gotoPastryToPreps),
             //ButtonData(symbolName: "person", title: "Policy", isSystemIcon: true, action: customAction),
             //ButtonData(symbolName: "questionmark.circle", title: "Help", isSystemIcon: true, action: customAction),
             // ... add other buttons data
@@ -47,7 +49,7 @@ struct ContentView: View {
             Image("logo_hinnawi") // Replace "logo_hinnawi" with your actual image file name
                 .resizable()
                 .scaledToFit()
-                .frame(height: 200) // Adjust the size as needed.
+                .frame(width: 500, height: 500) // Adjust the size as needed.
                 .padding(50)
         }
 
@@ -89,9 +91,16 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showPastryToPrepInvView) {
             PastryToPrepInView()
+                .environmentObject(viewModel) // Inject the environment object
         }
-        .environmentObject(viewModel) // Inject the environment object
-        
+        .sheet(isPresented: $showFoodToPrepInvView) {
+            FoodToPrepInView()
+        }
+        .environmentObject(viewModel_FTP) // Inject the environment object
+        Spacer()
+        Text("Got any hiccups or cool ideas to make our app better? Just message me on Slack.      - Baldwin")
+            .frame(width: 500)
+            .foregroundColor(.red)
     }
 
     // Function to increment button count
@@ -109,6 +118,10 @@ struct ContentView: View {
     // Function for custom action
     private func gotoPastryToPreps() {
         showPastryToPrepInvView = true
+    }   
+    // Function for custom action
+    private func gotoFoodToPreps() {
+        showFoodToPrepInvView = true
     }
 }
 
@@ -129,6 +142,12 @@ struct PrepsInvView: View {
 struct PastryToPrepInView: View {
     var body: some View {
         PastryToPepView()
+     
+    }
+}
+struct FoodToPrepInView: View {
+    var body: some View {
+        FoodToPrepView()
      
     }
 }

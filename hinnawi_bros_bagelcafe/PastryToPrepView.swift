@@ -23,8 +23,6 @@ class PastryToPrepViewModel: ObservableObject {
     @Published var pastries: [PastryItemToPrep] = [
         PastryItemToPrep(name: "Banana bread with nut", quantity: 0),
         PastryItemToPrep(name: "Banana bread without nut", quantity: 0),
-        PastryItemToPrep(name: "Banana bread with nut", quantity: 0),
-        PastryItemToPrep(name: "Banana bread without nut", quantity: 0),
         PastryItemToPrep(name: "Vegan brownie", quantity: 0),
         PastryItemToPrep(name: "Cinnamon muffins", quantity: 0),
         PastryItemToPrep(name: "Chocolate cake", quantity: 0),
@@ -32,7 +30,7 @@ class PastryToPrepViewModel: ObservableObject {
         PastryItemToPrep(name: "Lemon poppy cake", quantity: 0),
         PastryItemToPrep(name: "Chocolate chip cookie", quantity: 0),
         PastryItemToPrep(name: "Chocolate and walnuts cookie", quantity: 0),
-        PastryItemToPrep(name: "Berrie cookie", quantity: 0),
+        PastryItemToPrep(name: "Berries cookie", quantity: 0),
         PastryItemToPrep(name: "Double chocolate cookie", quantity: 0),
         PastryItemToPrep(name: "Croissant", quantity: 0),
         PastryItemToPrep(name: "Chocolatine", quantity: 0),
@@ -63,6 +61,10 @@ struct PastryToPepView: View {
     
     var body: some View {
         VStack{
+            Text("*** THIS FEATURE IS UNDER DEVELOPMENT.        -Baldwin ***")
+                .foregroundColor(.red)
+                .italic()
+            controlButtons
             List {
                 ForEach(viewModel.pastries) { pastry in
                     HStack {
@@ -97,13 +99,59 @@ struct PastryToPepView: View {
                 }
             }
             VStack{
-                Text("*** This Pastries Tab is under development ***")
-                    .italic() // Makes the text italic
-                    .foregroundColor(.red) // Sets the text color to red
+                Button(action: {
+                    //edit
+                }) {
+                    Image(systemName: "gearshape")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                }
+            }
+            VStack{
+                Text("Add/Remove item")
+                    .foregroundColor(.blue)
             }
         }
         
-        .background(Color.white)
+        .background(Color.yellow)
+        
+
+    }
+    private var controlButtons: some View {
+        HStack {
+            Button(action: {
+                
+            }) {
+                Text("Save")
+                    .frame(width: 90, height: 50)
+                    .foregroundColor(.white)
+                    .background(Color.green)
+                    .cornerRadius(10)
+            }
+            Button(action: {
+            }) {
+                Text("Clear")
+                    .frame(width: 90, height: 50)
+                    .foregroundColor(.white)
+                    .background(Color.orange.opacity(0.8))
+                    .cornerRadius(10)
+            }
+            Spacer()
+            Text("Pastries Production").bold()
+                .foregroundColor(.blue)
+                .font(.system(size: 30, weight: .heavy)) // Customize font size and weight
+            Spacer()
+            Button("X") {
+                
+            }
+            .frame(width: 60, height: 60)
+            .font(.system(size: 50))
+            .foregroundColor(.white)
+            .background(Color.red)
+            .cornerRadius(20)
+        }
+        .padding()
     }
 }
 
