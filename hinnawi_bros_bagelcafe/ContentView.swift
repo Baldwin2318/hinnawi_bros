@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var buttonCount = 0
     @State private var selectedTabIndex = 0  // Add this line to track the current tab index
     @State private var itemQuantities: [[String]] = Array(repeating: Array(repeating: "", count: 100), count: 6)  // Adjust numbers as needed
+    @State private var itemQuantitiesUnit: [[String]] = Array(repeating: Array(repeating: "", count: 100), count: 6)  // Adjust numbers as needed
+    @State private var itemQuantitiesVal : [[String]] = Array(repeating: Array(repeating: "", count: 100), count: 6)  // Adjust numbers as needed
     
     @State private var showStoreInvView = false
     @State private var showPrepsInvView = false
@@ -24,7 +26,7 @@ struct ContentView: View {
     private var buttons: [ButtonData] {
         [
   //          ButtonData(symbolName: "checklist", title: "Closing Check List", isSystemIcon: true, action: incrementButtonCount),
-  //          ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
+            ButtonData(symbolName: "cart", title: "Store Inventory", isSystemIcon: true, action: gotoInventory),
   //          ButtonData(symbolName: "leaf.arrow.triangle.circlepath", title: "Prep List", isSystemIcon: true, action: gotoFoodToPreps),
             //ButtonData(symbolName: "bagel", title: "Sandwich", isSystemIcon: false, action: customAction),
             ButtonData(symbolName: "veggie", title: "Inventory End of Day", isSystemIcon: false, action: gotoInventoryPreps),
@@ -83,20 +85,24 @@ struct ContentView: View {
             .padding(.horizontal) // Add horizontal padding
         .environment(\.colorScheme, .light)
         .sheet(isPresented: $showStoreInvView) {
-            StoreInvView(selectedTab: $selectedTabIndex, itemQuantities: $itemQuantities) // Pass the binding to the item quantities
+            StoreInvView(selectedTab: $selectedTabIndex, itemQuantities: $itemQuantities, itemQuantitiesUnit: $itemQuantitiesUnit, itemQuantitiesVal: $itemQuantitiesVal) // Pass the binding to the item quantities
+                .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showPrepsInvView) {
             PrepsInvView()
                 .environmentObject(viewModel) // Inject the environment object
+                .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showPastryToPrepInvView) {
             PastryToPrepInView()
                 .environmentObject(viewModel) // Inject the environment object
+                .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showFoodToPrepInvView) {
             FoodToPrepInView()
         }
         .environmentObject(viewModel_FTP) // Inject the environment object
+        .interactiveDismissDisabled()
         Spacer()
         Text("Got any hiccups or cool ideas to make our app better? Just message me on Slack.      - Baldwin")
             .frame(width: 500)
@@ -128,9 +134,11 @@ struct ContentView: View {
 struct StoreInvView: View {
     @Binding var selectedTab: Int // Accept the binding here
     @Binding var itemQuantities: [[String]]  // Add this line
+    @Binding var itemQuantitiesUnit: [[String]]  // Add this line
+    @Binding var itemQuantitiesVal: [[String]]  // Add this line
     
     var body: some View {
-        store_inv(selectedTab: $selectedTab, itemQuantities: $itemQuantities) // Pass the binding
+        store_inv(selectedTab: $selectedTab, itemQuantities: $itemQuantities, itemQuantitiesUnit: $itemQuantitiesUnit, itemQuantitiesVal: $itemQuantitiesVal) // Pass the binding
     }
 }
 struct PrepsInvView: View {

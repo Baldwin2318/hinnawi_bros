@@ -20,7 +20,7 @@ struct MainTabView: View {
     
     // Define the items
     let items = [
-        "Bacon", "Eggs", "Veggie patty", "Chicken (100g)", "Tofu", "Smoked Meat (90g)", "Turkey (60)", "Salmon (70g)", "Mix Vege",
+        "Bacon", "Eggs", "Veggie patty", "Chicken (100g)", "Tofu", "Smoked Meat (90g)", "Turkey (60g)", "Salmon (70g)", "Mix Vege",
         "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
         "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
         "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"
@@ -81,7 +81,7 @@ struct MainTabView: View {
                 Image(systemName: "chevron.left")
                     .foregroundColor(.blue)
                     .offset(x:0, y:0)
-                    .frame(width: 20)
+                    .frame(width: 40)
                     .offset(x: animateLeftChevron ? -5 : 0) // Move left and right
                         .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true), value: animateLeftChevron)
                         .onAppear {
@@ -111,7 +111,7 @@ struct MainTabView: View {
                 Image(systemName: "chevron.right")
                     .foregroundColor(.blue)
                     .offset(x:0, y:0)
-                    .frame(width: 20)
+                    .frame(width: 40)
                     .opacity(animateRightChevron ? 0.5 : 1) // Change opacity to indicate animation
                     .offset(x: animateRightChevron ? 0 : 5) // Move left and right
                     .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true), value: animateRightChevron)
@@ -136,6 +136,7 @@ struct MainTabView: View {
     }
     // Tab view for InventoryTab and PastriesInvTab
     private var contentTabs: some View {
+        
         TabView(selection: $selectedInventory) {
                 InventoryTab()
                     .tag(0) // Corresponds to "FOOD INVENTORY"
@@ -991,7 +992,7 @@ struct InventoryGridView: View {
     
     // Define the items
     let items = [
-        "Bacon", "Eggs", "Veggie patty", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Salmon", "Mix Vege",
+        "Bacon", "Eggs", "Veggie patty", "Chicken (100g)", "Tofu", "Smoked Meat (90g)", "Turkey (60g)", "Salmon (70g)", "Mix Vege",
         "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
         "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
         "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"
@@ -1030,7 +1031,7 @@ struct InventoryGridView: View {
     }
     
     let images = [
-        "Bacon", "Eggs", "Veggie patty", "Chicken", "Tofu", "Smoked Meat", "Turkey", "Salmon", "Mix Vege",
+        "Bacon", "Eggs", "Veggie patty", "Chicken (100g)", "Tofu", "Smoked Meat (90g)", "Turkey (60g)", "Salmon (70g)", "Mix Vege",
         "Onions", "Cucumber", "Pepper", "Tomatoes", "Lettuce", "Cream Cheese", "Butter",
         "Bacon Jam", "Potatoes", "Mayo", "Spicy Mayo", "Dijon Mustard", "Honey Mustard",
         "Canola Oil", "Lemon Squeezed in a Bottle", "Hinnawi Cream Cheese", "Olive Oil"
@@ -1204,6 +1205,7 @@ struct InventoryGridView: View {
                                         itemName: selectedItem,
                                         imageName: selectedItem, // Assuming the image name is same as the item name
                                         dates: datesBinding)
+                    .interactiveDismissDisabled()
                 }
             }
 
